@@ -1,5 +1,6 @@
 require 'net/http'
 require 'net/https'
+require 'net/http/persistent'
 
 # The default/Net::Http adapter for RSolr.
 class RSolr::Connection
@@ -31,10 +32,9 @@ class RSolr::Connection
         proxy_user, proxy_pass = proxy.userinfo.split(/:/) if proxy.userinfo
         Net::HTTP.Proxy(proxy.host, proxy.port, proxy_user, proxy_pass).new uri.host, uri.port
       else
-        Net::HTTP.new uri.host, uri.port
+        Net::HTTP::Persistent.new
       end
-      http.use_ssl = uri.port == 443 || uri.instance_of?(URI::HTTPS)      
-      http
+      http.connection_for uri
     )
   end
   
